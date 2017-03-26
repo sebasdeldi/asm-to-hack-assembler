@@ -1,0 +1,1 @@
+Built by Sebastián Delgado for the nand2teteris course (Project6), to execute run assembler.rb passing a .asm file as parameter ($ruby assembler.rb my_program.asm), as output the program will generate the traduced .hack version of your program, if any error is found, it will be displayed in the console.
