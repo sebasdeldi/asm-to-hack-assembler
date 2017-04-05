@@ -5,16 +5,25 @@ class Rules
   @stored_variables = []
   @stored_variables_value = []
   @counter = 0
+  @aux = []
+  
 
   #----------------------------------------------------------A-INSTRUCTIONS-CODE----------------------------------------------------------
   # A instructions have to be 16 bit long
-  def self.a_16_bit (line)
+  def self.a_16_bit (line, label_values = nil)
     a_rules = Rules.new
+      
     #if is one of the reserved variables
     if line[1] == 'R' || line[1..line.length] == "SP" || line[1..line.length] == "ARG" ||  line[1..line.length] == "KBD" ||  line[1..line.length] == "SCREEN" ||  line[1..line.length] == "THIS" || line[1..line.length] == "THAT" || line[1..line.length] == "LCL"
       bin_val = a_rules.set_reserved_variable_value(line)
-    elsif (/^[[:alpha:]]+$/).match(line[1..line.length]) # If is a user created variable
-      # Code for handling variables used more than once throughout the program
+    elsif ((!MyMath.is_number? line[1..line.length]) && (line[1..line.length] == line[1..line.length].upcase)) #is a label
+      val = label_values.select { |label| label.split(" ")[1] === line[1..line.length]}
+      @aux << val
+      @aux.each do |element|
+        bin_val =  (element.to_s.split(" ")[0].split('"')[1]).to_i
+      end
+      
+    elsif (/^[[:alpha:]]+$/).match(line[1..line.length]) # If is a user created variable 
       unless @stored_variables.include?(line[1..line.length]) #If varible not stored => store it
         @stored_variables << line[1..line.length]
         @counter += 1 # so new variables get the next memory position
@@ -29,9 +38,8 @@ class Rules
     else
       bin_val = MyMath.to_binary(line[1..line.length]) # If is a regular @[(0-9)*] expression
     end
-    n = bin_val.to_s.length
-    m = 16 - n
-    complete_number = ("0"*m) + bin_val.to_s # Complete 16 bits with 0's
+    MyMath.complete_with_0 bin_val.to_s.length, bin_val.to_s
+    
   end
 
 
